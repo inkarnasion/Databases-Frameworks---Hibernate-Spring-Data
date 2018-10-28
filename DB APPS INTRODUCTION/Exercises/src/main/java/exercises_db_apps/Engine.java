@@ -114,22 +114,14 @@ Problem 2 -- getVillainNames
         String minionTown = minionParams[3];
         String villainName = villainParams[1];
 
-        PreparedStatement preparedStatement =
-                insertIntoVillains(minionTown,
-                        "SELECT * FROM towns WHERE `name` = ?",
-                        "INSERT INTO towns(name) VALUES (?)",
-                        "Town %s was added to the database.%n");
+        PreparedStatement preparedStatement = insertIntoVillainsStatements(minionTown);
         ResultSet townsResultSet;
 
         townsResultSet = preparedStatement.executeQuery();
         townsResultSet.next();
         int townId = townsResultSet.getInt("id");
 
-        PreparedStatement villainSelectStatement =
-                insertIntoVillains(villainName,
-                        "SELECT * FROM villains WHERE `name` = ?",
-                        "INSERT INTO villains(name, evilness_factor) VALUES (?, 'evil')",
-                        "Villain %s was added to the database.%n");
+        PreparedStatement villainSelectStatement = villainSelectStatements(villainName);
         ResultSet villainsResultSet;
 
         villainsResultSet = villainSelectStatement.executeQuery();
@@ -152,6 +144,26 @@ Problem 2 -- getVillainNames
         villainsResultSet.close();
 
         connection.close();
+    }
+
+    private PreparedStatement insertIntoVillainsStatements(String minionTown) throws SQLException {
+        PreparedStatement preparedStatement =
+                insertIntoVillains(minionTown,
+                        "SELECT * FROM towns WHERE `name` = ?",
+                        "INSERT INTO towns(name) VALUES (?)",
+                        "Town %s was added to the database.%n");
+        ResultSet townsResultSet;
+        return preparedStatement;
+    }
+
+    private PreparedStatement villainSelectStatements(String villainName) throws SQLException {
+        PreparedStatement villainSelectStatement =
+                insertIntoVillains(villainName,
+                        "SELECT * FROM villains WHERE `name` = ?",
+                        "INSERT INTO villains(name, evilness_factor) VALUES (?, 'evil')",
+                        "Villain %s was added to the database.%n");
+        ResultSet villainsResultSet;
+        return villainSelectStatement;
     }
 
     private PreparedStatement insertIntoVillains(String villainName, String s, String s2, String s3) throws SQLException {
